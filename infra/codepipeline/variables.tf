@@ -16,11 +16,11 @@ variable "github_branch" {
   default     = "main"
 }
 
-# variable "github_oauth_token" {
-#   description = "GitHub OAuth token for accessing the repository"
-#   type        = string
+variable "github_oauth_token" {
+  description = "GitHub OAuth token for accessing the repository"
+  type        = string
   
-# }
+}
 
 
 variable "pipeline_role" {
