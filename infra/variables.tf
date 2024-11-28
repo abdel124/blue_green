@@ -67,5 +67,4 @@ variable "github_branch" {
 variable "github_oauth_token" {
   description = "GitHub OAuth token for accessing the repository"
   type        = string
-  default = "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"
 }
