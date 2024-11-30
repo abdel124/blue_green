@@ -10,7 +10,7 @@ resource "aws_codebuild_project" "build_project" {
 
   source {
     type     = "CODEPIPELINE"   # Source should be CODEPIPELINE for CodePipeline integration
-    buildspec = "blue_green/app/buildspec.yaml"  # Path to buildspec inside source code
+    buildspec = "buildspec.yaml"  # Path to buildspec inside source code
   }
 
   environment {
