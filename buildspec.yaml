@@ -5,7 +5,8 @@ phases:
     runtime-versions:
       python: 3.9
     commands:
-      - pip install -r requirements.txt
+      - ls -al 
+      - pip install -r app/requirements.txt
   pre_build:
     commands:
       - python -m unittest discover tests
