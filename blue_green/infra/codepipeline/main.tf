@@ -4,7 +4,13 @@ resource "aws_codebuild_project" "build_project" {
   service_role  = var.codebuild_role_arn
 
   artifacts {
-    type = "CODEPIPELINE"
+    type     = "CODEPIPELINE"   # Artifacts should be CODEPIPELINE when using CodePipeline source
+    packaging = "ZIP"
+  }
+
+  source {
+    type     = "CODEPIPELINE"   # Source should be CODEPIPELINE for CodePipeline integration
+    buildspec = "buildspec.yaml"  # Path to buildspec inside source code
   }
 
   environment {
@@ -14,10 +20,10 @@ resource "aws_codebuild_project" "build_project" {
     privileged_mode             = false
   }
 
-  source {
-    type            = "CODEPIPELINE"
-    buildspec       = file("${path.module}/blue_green/app/buildspec.yml")
-  }
+#   source {
+#     type            = "CODEPIPELINE"
+#     buildspec       = file("${path.module}/blue_green/app/buildspec.yml")
+#   }
 
   tags = {
     Name        = "${var.project_name}-build"
@@ -33,9 +39,6 @@ resource "aws_codepipeline" "pipeline" {
     location = var.pipeline_bucket
     type     = "S3"
   }
-
-
-
 
   stage {
     name = "Source"

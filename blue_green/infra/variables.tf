@@ -55,7 +55,7 @@ variable "github_owner" {
 variable "github_repo" {
   description = "GitHub repository name"
   type        = string
-  default     = "blue_greent"
+  default     = "blue_green"
 }
 
 variable "github_branch" {

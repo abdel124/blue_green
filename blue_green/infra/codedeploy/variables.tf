@@ -15,3 +15,9 @@ variable "alb_listner" {
   type        = list(string)
   #default     = "main"
 }
+
+variable "alb_name" {
+  description = "load balancer listner"
+  type        = string
+  #default     = "main"
+}

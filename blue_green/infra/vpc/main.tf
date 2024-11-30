@@ -55,38 +55,26 @@ resource "aws_route_table_association" "public" {
 }
 
 # resource "aws_nat_gateway" "nat" {
-#   count                   = var.enable_nat_gateway ? 1 : 0
-#   allocation_id           = aws_eip.nat.id
-#   subnet_id               = aws_subnet.public[0].id
+#   count                   = length(var.public_subnets)
+#   allocation_id           = aws_eip.nat[count.index].id
+#   subnet_id               = var.public_subnets[count.index]
+#   connectivity_type       = "public"
+
 #   tags = {
-#     Name = "project-nat-gateway"
+#     Name = "NAT Gateway ${count.index}"
 #   }
 # }
 
-resource "aws_nat_gateway" "nat" {
-  count                   = length(var.public_subnets)
-  allocation_id           = aws_eip.nat[count.index].id
-  subnet_id               = var.public_subnets[count.index]
-  connectivity_type       = "public"
-
-  tags = {
-    Name = "NAT Gateway ${count.index}"
-  }
-}
 # resource "aws_eip" "nat" {
-#   count = var.enable_nat_gateway ? 1 : 0
-#   vpc   = true
+#   count = length(var.public_subnets)
+
+#   vpc = true
+
+#   tags = {
+#     Name = "EIP for NAT ${count.index}"
+#   }
 # }
 
-resource "aws_eip" "nat" {
-  count = length(var.public_subnets)
-
-  vpc = true
-
-  tags = {
-    Name = "EIP for NAT ${count.index}"
-  }
-}
 resource "aws_route_table" "private" {
   count  = length(aws_subnet.private)
   vpc_id = aws_vpc.main.id
@@ -95,12 +83,7 @@ resource "aws_route_table" "private" {
   }
 }
 
-resource "aws_route" "private_to_nat" {
-  count                   = var.enable_nat_gateway ? length(aws_subnet.private) : 0
-  route_table_id          = aws_route_table.private[count.index].id
-  destination_cidr_block  = "0.0.0.0/0"
-  nat_gateway_id          = aws_nat_gateway.nat[0].id
-}
+
 
 resource "aws_route_table_association" "private" {
   count          = length(aws_subnet.private)

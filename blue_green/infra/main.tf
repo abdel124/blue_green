@@ -1,6 +1,5 @@
 # 0. VPC Module
 
-
 module "vpc" {
   source              = "./vpc"
   vpc_cidr            = var.vpc_cidr
@@ -10,15 +9,23 @@ module "vpc" {
   availability_zones  = var.availability_zones
 }
 
+module "nat" {
+  source         = "./nat"
+  public_subnets = module.vpc.public_subnets
+  tags           = { Environment = "Dev" }
+  private_route_table_ids = module.vpc.private_route_table_ids
+  private_subnets = module.vpc.private_subnets
+}
+
 module "s3" {
   source      = "./s3"
-  bucket_name = "my-codepipeline-artifacts-bucket_abdel-124"
+  bucket_name = "my-codepipeline-artifacts-bucket-abdel"
   environment = "dev"
 }
 
 module "iam" {
     source = "./iam"  // Adjust to the path of your IAM module
-    artifact_bucket_name = module.s3.bucket_name
+    artifact_bucket_name = "my-codepipeline-artifacts-bucket-abdel"
     // Add required variables for your IAM configuration
 }
 
@@ -27,14 +34,14 @@ module "alb" {
   source     = "./alb"
   vpc_id     = module.vpc.vpc_id
   subnets = module.vpc.public_subnet_ids
-  #alb_name   = "app-load-balancer"
+  
 }
 
 module "ec2" {
   source                = "./ec2"
   instance_type         = var.instance_type
   ami_id                = var.ami_id
-  subnets = var.private_subnets
+  subnets = module.vpc.private_subnets
   alb_blue_target = module.alb.alb_target_group_arn_blue
   alb_green_target = module.alb.alb_target_group_arn_green
   #asg_desired_capacity  = 2
@@ -46,6 +53,7 @@ module "ec2" {
 
 module "codedeploy" {
   source                     = "./codedeploy"
+  alb_name = "app-load-balancer"
   #app_name                   = "python-app"
   iam_role = module.iam.codedeploy_role_arn
   #deployment_group_name      = "python-app-group"
@@ -64,7 +72,7 @@ module "codepipeline" {
   github_branch              = var.github_branch
   github_oauth_token         = var.github_oauth_token
   pipeline_role = module.iam.pipeline_role_arn
-  pipeline_bucket = module.s3.bucket_arn
+  pipeline_bucket = "my-codepipeline-artifacts-bucket-abdel"
   environment = "dev"
   codebuild_role_arn = module.iam.codebuild_role_arn
   deployment_group_name = module.codedeploy.deployment_group_name

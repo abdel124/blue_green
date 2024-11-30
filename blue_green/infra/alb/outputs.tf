@@ -14,6 +14,6 @@ output "alb_target_group_arn_blue" {
 
 output "listener" {
   description = "ARN of the blue target group for the ALB"
-  value       = [aws_lb_listener.listener]
+  value       = [aws_lb_listener.listener.arn]
 }
 
