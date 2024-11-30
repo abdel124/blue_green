@@ -6,7 +6,7 @@ phases:
       python: 3.9
     commands:
       - ls -al 
-      - pip install -r app/requirements.txt
+      - pip install -r blue_green/app/requirements.txt
   pre_build:
     commands:
       - python -m unittest discover tests
